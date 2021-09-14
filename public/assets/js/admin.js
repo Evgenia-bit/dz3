@@ -1,14 +1,23 @@
 
 function prepareSend(e, form, data, url) {
     e.preventDefault();
-    
-    console.log(data)
+
+
+    data = new FormData();
+    data.append('files', form.photo.files[0]);
+
     const resultContainer = form.querySelector('.status');
     resultContainer.innerHTML = 'Sending...';
     
-    sendJson(url, data, 'POST', (data) => {
+    sendJson(url, data, 'POST', (result) => {
       form.reset();
-      resultContainer.innerHTML = data.msg; 
+      resultContainer.innerHTML = result.msg; 
+      if(form.getAttribute('id') == 'skills') {
+        let formElements = form.elements;
+        for (var i = 0; i< formElements.length; i++) {
+          formElements[i].value = data[formElements[i].name];  
+        } 
+      } 
     });
 }
   
@@ -16,6 +25,7 @@ function sendJson (url, data, method, cb) {
     // eslint-disable-next-line no-undef
     const xhr = new XMLHttpRequest();
     xhr.open(method, url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onload = function (e) {
       let result;
       try {
@@ -40,7 +50,17 @@ formSkills.addEventListener('submit', e => {
     cities: formSkills.cities.value,
     years: formSkills.years.value
   };
-
   prepareSend(e, formSkills, data, '/admin/skills');
-}); 
+});
+
+formProd.addEventListener('submit', e => {
+  
+
+  const data = {
+    photo: formProd.photo.files[0],
+    name: formProd.name.value,
+    price: formProd.price.value
+  };
+  prepareSend(e, formProd, data, '/admin/upload');
+});
 //formSkills.addEventListener('submit'); 

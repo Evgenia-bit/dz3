@@ -1,4 +1,4 @@
-/* eslint-disable spaced-comment */
+
 const express = require('express')
 const router = express.Router()
 const fs = require('fs')
@@ -8,35 +8,38 @@ const {skills}  = require('../data.json')
 const db = require('../models/db')();
 
 router.get('/', (req, res, next) => {
-  // TODO: Реализовать, подстановку в поля ввода формы 'Счетчики'
-  // актуальных значений из сохраненых (по желанию)
   res.render('pages/admin', { title: 'Admin page' , skills })
 })
 
 router.post('/skills', (req, res, next) => {
-  console.log(req.body)
-  if (!req.body.age || !req.body.concerts || !req.body.cities || !req.body.years) {
-    // если что-либо не указано - сообщаем об этом
+  let age = req.body.age;
+  let concerts = req.body.concerts;
+  let cities = req.body.cities;
+  let years = req.body.years;
+  if (!age || !concerts || !cities || !years) {
     return res.json({msg:'Все поля нужно заполнить!', status: 'Error'});
   }
   
-  db.use('skillfs',11);
- // db.set('skillsа', req.body.age );
-  db.save();
-  return res.json({msg:'Данные успешно записаны!', status: 'OK'});
+  db.set('skills:0:number', Number(age) );
+  db.set('skills:1:number', Number(concerts) );
+  db.set('skills:2:number', Number(cities) );
+  db.set('skills:3:number', Number(years) );
+  db.save()
+  return res.json({msg:'Данные успешно изменены!', status: 'OK'});
+
 })
 
 router.post('/upload', (req, res, next) => {
-  const form = new formidable.IncomingForm(); // получаем данные с формы
-  // eslint-disable-next-line spaced-comment
-  const upload = path.join('./public', 'upload'); //определяем директорию для сохранения картинки
+  console.log(req);
+  var form   =  new formidable.IncomingForm();
+  console.log(req.file);
+  form.parse(req,function(err,fields,files){
+      console.log(files);
+     // util.inspect({fields: fields, files: files});
+  });
+  
 
-  if (!fs.existsSync(upload)) {
-    fs.mkdirSync(upload);
-  }
-
-  form.uploadDir = path.join(process.cwd(), upload); //переносим картинку из временного хранилища в основное
-
+/*
   form.parse(req, function (err, fields, files) { //парсим данные с формы
     console.log(fields, files)
     if (err) {
@@ -49,7 +52,7 @@ router.post('/upload', (req, res, next) => {
       return res.json({msg: 'лялялял', status: "OK"})
     }
     
-  })
+  })*/
   return res.json({msg: 'Что-то пошло не так', status: "error"})
 
 })
