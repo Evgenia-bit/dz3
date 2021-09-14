@@ -1,16 +1,12 @@
 
-function prepareSendProd(e) {
+function prepareSend(e, form, data, url) {
     e.preventDefault();
-    const files = form.querySelector('[name=photo]').files;
-
-    // eslint-disable-next-line no-undef
-    const formData = new FormData();
-    formData.append('avatar', files[0]);
     
-  
+    console.log(data)
     const resultContainer = form.querySelector('.status');
     resultContainer.innerHTML = 'Sending...';
-    sendJson('/admin/upload', formData, 'POST', (data) => {
+    
+    sendJson(url, data, 'POST', (data) => {
       form.reset();
       resultContainer.innerHTML = data.msg; 
     });
@@ -33,5 +29,18 @@ function sendJson (url, data, method, cb) {
     xhr.send(JSON.stringify(data));
 }
   
-const form = document.querySelector('#prod');
-form.addEventListener('submit', prepareSendProd); 
+const formProd = document.querySelector('#prod');
+const formSkills = document.querySelector('#skills');
+
+
+formSkills.addEventListener('submit', e => {
+  const data = {
+    age: formSkills.age.value,
+    concerts: formSkills.concerts.value,
+    cities: formSkills.cities.value,
+    years: formSkills.years.value
+  };
+
+  prepareSend(e, formSkills, data, '/admin/skills');
+}); 
+//formSkills.addEventListener('submit'); 

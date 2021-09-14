@@ -4,23 +4,26 @@ const router = express.Router()
 const fs = require('fs')
 const path = require('path')
 const formidable = require('formidable'); 
+const {skills}  = require('../data.json')
+const db = require('../models/db')();
 
 router.get('/', (req, res, next) => {
   // TODO: Реализовать, подстановку в поля ввода формы 'Счетчики'
   // актуальных значений из сохраненых (по желанию)
-  res.render('pages/admin', { title: 'Admin page' })
+  res.render('pages/admin', { title: 'Admin page' , skills })
 })
 
 router.post('/skills', (req, res, next) => {
-  /*
-  TODO: Реализовать сохранение нового объекта со значениями блока скиллов
-
-    в переменной age - Возраст начала занятий на скрипке
-    в переменной concerts - Концертов отыграл
-    в переменной cities - Максимальное число городов в туре
-    в переменной years - Лет на сцене в качестве скрипача
-  */
-  res.send('Реализовать сохранение нового объекта со значениями блока скиллов')
+  console.log(req.body)
+  if (!req.body.age || !req.body.concerts || !req.body.cities || !req.body.years) {
+    // если что-либо не указано - сообщаем об этом
+    return res.json({msg:'Все поля нужно заполнить!', status: 'Error'});
+  }
+  
+  db.use('skillfs',11);
+ // db.set('skillsа', req.body.age );
+  db.save();
+  return res.json({msg:'Данные успешно записаны!', status: 'OK'});
 })
 
 router.post('/upload', (req, res, next) => {
